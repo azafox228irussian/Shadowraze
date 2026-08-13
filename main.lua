@@ -1,30 +1,23 @@
 -- ===========================================================
---  SHADOWRAZE INTRO (загружается с GitHub)
---  После завершения запускает локальный скрипт
+--  SHADOWRAZE INTRO
 -- ===========================================================
 
-local function ShowIntroAndRunLocalScript()
-    -- Проверяем, не запущено ли уже
-    if getgenv()._ShadowrazeIntroShown then return end
-    getgenv()._ShadowrazeIntroShown = true
+local function ShowIntroAndRun()
+    if getgenv()._IntroRunning then return end
+    getgenv()._IntroRunning = true
     
-    -- Ждём загрузки игры
     repeat task.wait() until game:IsLoaded()
-    
-    -- ==========================================
-    --  СОЗДАНИЕ GUI ИНТРО
-    -- ==========================================
     
     local TweenService = game:GetService("TweenService")
     
-    -- Создаём GUI
+    -- GUI
     local gui = Instance.new("ScreenGui")
     gui.Name = "ShadowrazeIntro"
     gui.IgnoreGuiInset = true
     gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
     gui.Parent = game:GetService("CoreGui")
     
-    -- ФОН
+    -- Фон
     local background = Instance.new("Frame")
     background.Size = UDim2.new(1, 0, 1, 0)
     background.BackgroundColor3 = Color3.fromRGB(8, 8, 16)
@@ -32,7 +25,6 @@ local function ShowIntroAndRunLocalScript()
     background.BorderSizePixel = 0
     background.Parent = gui
     
-    -- Градиент
     local gradient = Instance.new("UIGradient")
     gradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(8, 8, 16)),
@@ -42,14 +34,13 @@ local function ShowIntroAndRunLocalScript()
     gradient.Rotation = 45
     gradient.Parent = background
     
-    -- ЛОГОТИП
+    -- Логотип
     local logoFrame = Instance.new("Frame")
-    logoFrame.Size = UDim2.new(0, 300, 0, 300)
-    logoFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+    logoFrame.Size = UDim2.new(0, 280, 0, 280)
+    logoFrame.Position = UDim2.new(0.5, -140, 0.5, -180)
     logoFrame.BackgroundTransparency = 1
     logoFrame.Parent = gui
     
-    -- Фон логотипа
     local logoBg = Instance.new("Frame")
     logoBg.Size = UDim2.new(1, 0, 1, 0)
     logoBg.BackgroundColor3 = Color3.fromRGB(30, 25, 50)
@@ -61,17 +52,16 @@ local function ShowIntroAndRunLocalScript()
     logoBgCorner.CornerRadius = UDim.new(0, 20)
     logoBgCorner.Parent = logoBg
     
-    -- Обводка
     local logoStroke = Instance.new("UIStroke")
     logoStroke.Color = Color3.fromRGB(100, 80, 200)
     logoStroke.Thickness = 2
     logoStroke.Transparency = 0.5
     logoStroke.Parent = logoFrame
     
-    -- Заголовок
+    -- Текст
     local mainTitle = Instance.new("TextLabel")
     mainTitle.Size = UDim2.new(1, 0, 0, 60)
-    mainTitle.Position = UDim2.new(0, 0, 0.5, -100)
+    mainTitle.Position = UDim2.new(0, 0, 0.5, -90)
     mainTitle.BackgroundTransparency = 1
     mainTitle.Text = "SHADOWRAZE"
     mainTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -81,10 +71,9 @@ local function ShowIntroAndRunLocalScript()
     mainTitle.TextStrokeTransparency = 0.3
     mainTitle.Parent = logoFrame
     
-    -- Подзаголовок
     local subtitle = Instance.new("TextLabel")
     subtitle.Size = UDim2.new(1, 0, 0, 30)
-    subtitle.Position = UDim2.new(0, 0, 0.5, -50)
+    subtitle.Position = UDim2.new(0, 0, 0.5, -40)
     subtitle.BackgroundTransparency = 1
     subtitle.Text = "DA HOOD"
     subtitle.TextColor3 = Color3.fromRGB(150, 140, 200)
@@ -94,10 +83,10 @@ local function ShowIntroAndRunLocalScript()
     subtitle.TextStrokeTransparency = 0.5
     subtitle.Parent = logoFrame
     
-    -- ПРОГРЕСС-БАР
+    -- Прогресс
     local progressBg = Instance.new("Frame")
     progressBg.Size = UDim2.new(0, 250, 0, 6)
-    progressBg.Position = UDim2.new(0.5, -125, 0.5, 10)
+    progressBg.Position = UDim2.new(0.5, -125, 0.5, 20)
     progressBg.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
     progressBg.BackgroundTransparency = 0.5
     progressBg.BorderSizePixel = 1
@@ -126,10 +115,9 @@ local function ShowIntroAndRunLocalScript()
     })
     progGradient.Parent = progressFill
     
-    -- Текст процентов
     local progressText = Instance.new("TextLabel")
     progressText.Size = UDim2.new(0, 80, 0, 20)
-    progressText.Position = UDim2.new(0.5, -40, 0.5, 20)
+    progressText.Position = UDim2.new(0.5, -40, 0.5, 32)
     progressText.BackgroundTransparency = 1
     progressText.Text = "0%"
     progressText.TextColor3 = Color3.fromRGB(180, 170, 220)
@@ -137,12 +125,11 @@ local function ShowIntroAndRunLocalScript()
     progressText.Font = Enum.Font.Gotham
     progressText.Parent = logoFrame
     
-    -- LOADING
     local loadingText = Instance.new("TextLabel")
     loadingText.Size = UDim2.new(1, 0, 0, 20)
-    loadingText.Position = UDim2.new(0, 0, 0.5, 40)
+    loadingText.Position = UDim2.new(0, 0, 0.5, 52)
     loadingText.BackgroundTransparency = 1
-    loadingText.Text = "LOADING..."
+    loadingText.Text = "LOADING"
     loadingText.TextColor3 = Color3.fromRGB(120, 110, 170)
     loadingText.TextSize = 16
     loadingText.Font = Enum.Font.Gotham
@@ -150,137 +137,88 @@ local function ShowIntroAndRunLocalScript()
     loadingText.TextStrokeTransparency = 0.5
     loadingText.Parent = logoFrame
     
-    -- ==========================================
-    --  АНИМАЦИИ
-    -- ==========================================
-    
-    -- Появление фона
-    local bgTween = TweenService:Create(background, TweenInfo.new(1.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        BackgroundTransparency = 0.15
-    })
-    bgTween:Play()
-    
-    -- Появление логотипа
+    -- Анимации
+    background.BackgroundTransparency = 1
     logoFrame.Scale = 0.3
-    local logoInTween = TweenService:Create(logoFrame, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Scale = 1
-    })
-    logoInTween:Play()
-    
-    -- Появление текста
     mainTitle.TextTransparency = 1
     subtitle.TextTransparency = 1
     
-    task.delay(0.3, function()
-        TweenService:Create(mainTitle, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    task.wait(0.1)
+    
+    TweenService:Create(background, TweenInfo.new(1.0, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        BackgroundTransparency = 0.15
+    }):Play()
+    
+    TweenService:Create(logoFrame, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Scale = 1
+    }):Play()
+    
+    task.delay(0.2, function()
+        TweenService:Create(mainTitle, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
             TextTransparency = 0
         }):Play()
     end)
     
-    task.delay(0.6, function()
-        TweenService:Create(subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    task.delay(0.5, function()
+        TweenService:Create(subtitle, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
             TextTransparency = 0
         }):Play()
     end)
     
-    -- Мигание LOADING
+    -- Симуляция загрузки
+    local progress = 0
     local dotCount = 0
-    local function UpdateLoadingDots()
+    
+    while progress < 100 do
+        task.wait(0.03)
+        if progress < 80 then
+            progress = progress + math.random(3, 7)
+        else
+            progress = progress + math.random(0, 2)
+        end
+        if progress > 100 then progress = 100 end
+        
+        progressFill.Size = UDim2.new(progress / 100, 0, 1, 0)
+        progressText.Text = math.floor(progress) .. "%"
+        
         dotCount = (dotCount % 3) + 1
         loadingText.Text = "LOADING" .. string.rep(".", dotCount)
     end
     
-    -- ==========================================
-    --  СИМУЛЯЦИЯ ЗАГРУЗКИ
-    -- ==========================================
+    progressText.Text = "100% ✓"
+    progressText.TextColor3 = Color3.fromRGB(100, 255, 150)
     
-    local progress = 0
+    -- Вспышка
+    local flash = Instance.new("Frame")
+    flash.Size = UDim2.new(1, 0, 1, 0)
+    flash.BackgroundColor3 = Color3.fromRGB(130, 100, 255)
+    flash.BackgroundTransparency = 1
+    flash.BorderSizePixel = 0
+    flash.Parent = gui
     
-    -- Быстрая до 80%
-    while progress < 80 do
-        task.wait(0.02)
-        progress = progress + math.random(3, 8)
-        if progress > 80 then progress = 80 end
-        progressFill.Size = UDim2.new(progress / 100, 0, 1, 0)
-        progressText.Text = math.floor(progress) .. "%"
-        UpdateLoadingDots()
+    TweenService:Create(flash, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        BackgroundTransparency = 0.4
+    }):Play()
+    
+    task.wait(0.15)
+    
+    TweenService:Create(flash, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        BackgroundTransparency = 1
+    }):Play()
+    
+    task.wait(0.2)
+    
+    TweenService:Create(gui, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        ImageTransparency = 1
+    }):Play()
+    
+    task.wait(0.5)
+    gui:Destroy()
+    
+    -- Запуск основного скрипта
+    if type(getgenv().ShadowrazeMain) == "function" then
+        getgenv().ShadowrazeMain()
     end
-    
-    -- Медленная до 95%
-    while progress < 95 do
-        task.wait(0.05)
-        progress = progress + math.random(1, 3)
-        if progress > 95 then progress = 95 end
-        progressFill.Size = UDim2.new(progress / 100, 0, 1, 0)
-        progressText.Text = math.floor(progress) .. "%"
-        UpdateLoadingDots()
-    end
-    
-    -- ==========================================
-    --  ФИНАЛ ИНТРО → ЗАПУСК ЛОКАЛЬНОГО СКРИПТА
-    -- ==========================================
-    
-    task.delay(0.1, function()
-        -- Дозаполняем до 100%
-        TweenService:Create(progressFill, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Size = UDim2.new(1, 0, 1, 0)
-        }):Play()
-        
-        for i = 96, 100 do
-            progressText.Text = i .. "%"
-            task.wait(0.025)
-        end
-        progressText.Text = "100% ✓"
-        progressText.TextColor3 = Color3.fromRGB(100, 255, 150)
-        
-        -- Вспышка
-        local flash = Instance.new("Frame")
-        flash.Size = UDim2.new(1, 0, 1, 0)
-        flash.BackgroundColor3 = Color3.fromRGB(130, 100, 255)
-        flash.BackgroundTransparency = 1
-        flash.BorderSizePixel = 0
-        flash.Parent = gui
-        
-        TweenService:Create(flash, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            BackgroundTransparency = 0.4
-        }):Play()
-        
-        task.wait(0.15)
-        
-        TweenService:Create(flash, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-            BackgroundTransparency = 1
-        }):Play()
-        
-        task.wait(0.2)
-        
-        -- Исчезновение интро
-        TweenService:Create(gui, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-            ImageTransparency = 1
-        }):Play()
-        
-        task.wait(0.6)
-        gui:Destroy()
-        
-        -- ==========================================
-        --  ЗАПУСК ЛОКАЛЬНОГО СКРИПТА
-        --  (скрипт, который у вас в локальном файле)
-        -- ==========================================
-        
-        -- ПРОВЕРКА: существует ли локальный скрипт
-        if type(getgenv().ShadowrazeMain) == "function" then
-            -- Если основная функция уже определена в локальном скрипте
-            getgenv().ShadowrazeMain()
-        else
-            -- ИЛИ запускаем через pcall (если скрипт ещё не загружен)
-            pcall(function()
-                -- Здесь ваш основной скрипт (копируете его сюда)
-                -- Весь ваш код Shadowraze
-                
-                print("Shadowraze: Основной скрипт запущен!")
-            end)
-        end
-    end)
 end
 
--- Запускаем интро
-task.spawn(ShowIntroAndRunLocalScript)
+task.spawn(ShowIntroAndRun)
