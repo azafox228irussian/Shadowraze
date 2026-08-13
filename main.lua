@@ -1,22 +1,20 @@
 -- ===========================================================
---  SHADOWRAZE — ЗАГРУЗЧИК С ИНТРО
---  Сначала показывается интро, потом загружается основной скрипт
+--  SHADOWRAZE INTRO (загружается с GitHub)
+--  После завершения запускает локальный скрипт
 -- ===========================================================
 
-local function ShowIntroAndLoad()
+local function ShowIntroAndRunLocalScript()
     -- Проверяем, не запущено ли уже
-    if getgenv()._ShadowrazeLoading then return end
-    getgenv()._ShadowrazeLoading = true
+    if getgenv()._ShadowrazeIntroShown then return end
+    getgenv()._ShadowrazeIntroShown = true
     
     -- Ждём загрузки игры
     repeat task.wait() until game:IsLoaded()
     
     -- ==========================================
-    --  ЧАСТЬ 1: ИНТРО
+    --  СОЗДАНИЕ GUI ИНТРО
     -- ==========================================
     
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
     local TweenService = game:GetService("TweenService")
     
     -- Создаём GUI
@@ -26,16 +24,15 @@ local function ShowIntroAndLoad()
     gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
     gui.Parent = game:GetService("CoreGui")
     
-    -- Фон
+    -- ФОН
     local background = Instance.new("Frame")
-    background.Name = "Background"
     background.Size = UDim2.new(1, 0, 1, 0)
     background.BackgroundColor3 = Color3.fromRGB(8, 8, 16)
     background.BackgroundTransparency = 1
     background.BorderSizePixel = 0
     background.Parent = gui
     
-    -- Градиент фона
+    -- Градиент
     local gradient = Instance.new("UIGradient")
     gradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(8, 8, 16)),
@@ -45,9 +42,8 @@ local function ShowIntroAndLoad()
     gradient.Rotation = 45
     gradient.Parent = background
     
-    -- Контейнер логотипа
+    -- ЛОГОТИП
     local logoFrame = Instance.new("Frame")
-    logoFrame.Name = "LogoFrame"
     logoFrame.Size = UDim2.new(0, 300, 0, 300)
     logoFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
     logoFrame.BackgroundTransparency = 1
@@ -98,7 +94,7 @@ local function ShowIntroAndLoad()
     subtitle.TextStrokeTransparency = 0.5
     subtitle.Parent = logoFrame
     
-    -- Прогресс-бар
+    -- ПРОГРЕСС-БАР
     local progressBg = Instance.new("Frame")
     progressBg.Size = UDim2.new(0, 250, 0, 6)
     progressBg.Position = UDim2.new(0.5, -125, 0.5, 10)
@@ -122,7 +118,6 @@ local function ShowIntroAndLoad()
     progressFillCorner.CornerRadius = UDim.new(0, 4)
     progressFillCorner.Parent = progressFill
     
-    -- Градиент прогресса
     local progGradient = Instance.new("UIGradient")
     progGradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 70, 255)),
@@ -142,7 +137,7 @@ local function ShowIntroAndLoad()
     progressText.Font = Enum.Font.Gotham
     progressText.Parent = logoFrame
     
-    -- Текст LOADING
+    -- LOADING
     local loadingText = Instance.new("TextLabel")
     loadingText.Size = UDim2.new(1, 0, 0, 20)
     loadingText.Position = UDim2.new(0, 0, 0.5, 40)
@@ -156,7 +151,7 @@ local function ShowIntroAndLoad()
     loadingText.Parent = logoFrame
     
     -- ==========================================
-    --  АНИМАЦИИ ИНТРО
+    --  АНИМАЦИИ
     -- ==========================================
     
     -- Появление фона
@@ -196,7 +191,7 @@ local function ShowIntroAndLoad()
     end
     
     -- ==========================================
-    --  СИМУЛЯЦИЯ ЗАГРУЗКИ (интро)
+    --  СИМУЛЯЦИЯ ЗАГРУЗКИ
     -- ==========================================
     
     local progress = 0
@@ -221,7 +216,10 @@ local function ShowIntroAndLoad()
         UpdateLoadingDots()
     end
     
-    -- ФИНАЛ ИНТРО
+    -- ==========================================
+    --  ФИНАЛ ИНТРО → ЗАПУСК ЛОКАЛЬНОГО СКРИПТА
+    -- ==========================================
+    
     task.delay(0.1, function()
         -- Дозаполняем до 100%
         TweenService:Create(progressFill, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
@@ -264,33 +262,25 @@ local function ShowIntroAndLoad()
         gui:Destroy()
         
         -- ==========================================
-        --  ЧАСТЬ 2: ЗАГРУЗКА ОСНОВНОГО СКРИПТА
+        --  ЗАПУСК ЛОКАЛЬНОГО СКРИПТА
+        --  (скрипт, который у вас в локальном файле)
         -- ==========================================
         
-        -- Загружаем основной скрипт Shadowraze
-        -- (ваш основной код с Combat, Visuals, Movement и т.д.)
-        -- ВАЖНО: Вместо этого загрузите ваш полный скрипт
-        
-        print("Shadowraze: Интро завершено, загружаем основной скрипт...")
-        
-        -- Здесь должен быть ваш основной код
-        -- Например, если вы вынесли его в отдельный файл:
-        -- loadstring(game:HttpGet("https://raw.githubusercontent.com/azafox228irussian/Shadowraze/main/core.lua"))()
-        
-        -- ИЛИ если весь код в одном файле, то он просто продолжит выполняться
-        
-        -- Уведомление
-        if Notification then
+        -- ПРОВЕРКА: существует ли локальный скрипт
+        if type(getgenv().ShadowrazeMain) == "function" then
+            -- Если основная функция уже определена в локальном скрипте
+            getgenv().ShadowrazeMain()
+        else
+            -- ИЛИ запускаем через pcall (если скрипт ещё не загружен)
             pcall(function()
-                Notification.new({
-                    Title = "Shadowraze",
-                    Content = "Successfully loaded!",
-                    Duration = 3,
-                })
+                -- Здесь ваш основной скрипт (копируете его сюда)
+                -- Весь ваш код Shadowraze
+                
+                print("Shadowraze: Основной скрипт запущен!")
             end)
         end
     end)
 end
 
--- Запускаем загрузчик
-task.spawn(ShowIntroAndLoad)
+-- Запускаем интро
+task.spawn(ShowIntroAndRunLocalScript)
